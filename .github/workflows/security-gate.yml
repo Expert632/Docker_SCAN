@@ -1,0 +1,37 @@
+name: Security Gate - Critical Vulnerabilities
+
+on:
+  workflow_run:
+    workflows: ["Docker Image Scan with Trivy"] # Nom exact du workflow de scan
+    types:
+      - completed
+
+jobs:
+  security-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Checkout repository (optionnel si nécessaire)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Télécharger les rapports du workflow de scan
+      - name: Download scan reports artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-scan-reports
+          path: ./scan-reports
+
+      # 3) Vérifier la présence de vulnérabilités CRITICAL
+      - name: Run Security Gate Check
+        run: |
+          echo "Checking for CRITICAL vulnerabilities in scan-report.json..."
+          if grep -q '"Severity":"CRITICAL"' ./scan-reports/scan-report.json; then
+            echo "########################################################"
+            echo "❌ SECURITY GATE FAILED: CRITICAL vulnerability detected"
+            echo "########################################################"
+            exit 1
+          else
+            echo "########################################################"
+            echo "✅ SECURITY GATE PASSED: no CRITICAL vulnerability"
+            echo "########################################################"

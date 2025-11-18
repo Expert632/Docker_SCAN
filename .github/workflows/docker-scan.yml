@@ -1,4 +1,4 @@
-name: Docker Scan
+name: Docker Scan Lab
 
 on:
   push:
@@ -18,16 +18,22 @@ jobs:
       - name: Build Docker image
         run: docker build -t my-pedagogical-image .
 
-      - name: Scan Docker image and generate reports
-        id: scan
+      - name: Scan Docker image with Snyk
+        uses: snyk/actions/docker@v2
+        id: snyk-scan
+        with:
+          image: my-pedagogical-image
+          json: true
+          fail-on: none  # workflow reste toujours vert
+
+      - name: Save scan reports
         run: |
-          # Générer scan JSON
-          docker scan my-pedagogical-image --json > scan-report.json || true
-          # Générer scan TXT
-          docker scan my-pedagogical-image > scan-report.txt || true
-          
-          # Vérifier si le scan détecte des vulnérabilités critiques
-          if grep -q '"severity": "critical"' scan-report.json; then
+          echo "${{ steps.snyk-scan.outputs.json }}" > scan-report.json
+          echo "${{ steps.snyk-scan.outputs.text }}" > scan-report.txt
+
+      - name: Print summary
+        run: |
+          if grep -q '"severity":"critical"' scan-report.json; then
             echo "Vulnerability detected"
           else
             echo "No vulnerability detected"

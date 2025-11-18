@@ -1,24 +1,18 @@
-# Image volontairement extrêmement ancienne et vulnérable
-FROM ubuntu:14.04
+# Dockerfile minimal pour image volontairement vulnérable
+FROM ubuntu:16.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# On installe plusieurs paquets classiques connus pour accumuler des CVE :
-# - openssl (crypto, plein de CVE)
-# - curl, wget (réseau)
-# - apache2 (serveur web)
-# - php5 (vieux PHP blindé de failles)
+# On installe quelques paquets souvent vulnérables
 RUN apt-get update && \
     apt-get install -y \
       openssl \
       curl \
       wget \
-      apache2 \
-      php5 && \
+      ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Petit fichier de repère pédagogique
-RUN echo "Lab pédagogique TRÈS vulnérable - Ubuntu 14.04 + Apache2 + PHP5" > /lab.txt
+# Marqueur pédagogique
+RUN echo "Lab pédagogique vulnérable - Ubuntu 16.04" > /lab.txt
 
-# On lance juste apache pour faire joli (pas important pour le scan)
-CMD ["bash", "-c", "echo 'Vulnerable lab running'; sleep 3600"]
+CMD ["bash", "-c", "echo 'Hello from vulnerable Docker image'; sleep 60"]

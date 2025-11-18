@@ -86,11 +86,11 @@ jobs:
         run: |
           if grep -q '"Severity":"CRITICAL"' scan-report.json; then
             echo "======================================="
-            echo "👉 Vulnerability detected (CRITICAL) 👈"
+            echo "👉 No Vulnerability detected (CRITICAL) 👈"
             echo "======================================="
           else
             echo "======================================="
-            echo "✅ No vulnerability detected (CRITICAL)"
+            echo "✅ Vulnerability detected (CRITICAL)"
             echo "======================================="
           fi
 

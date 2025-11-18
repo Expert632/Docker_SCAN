@@ -1,5 +1,5 @@
 # Dockerfile minimal avec vulnérabilités
-FROM alpine:3.12  # ancienne version volontairement vulnérable
+FROM alpine:3.12
 
 # Installer des packages connus pour avoir des CVEs
 RUN apk add --no-cache bash curl openssl=1.1.1g-r0 \

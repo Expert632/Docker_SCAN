@@ -19,12 +19,14 @@ jobs:
         run: docker build -t my-pedagogical-image .
 
       - name: Scan Docker image with Snyk
-        uses: snyk/actions/docker@v2
+        uses: snyk/actions/docker@master
         id: snyk-scan
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: my-pedagogical-image
           json: true
-          fail-on: none  # workflow reste toujours vert
+          args: --severity-threshold=high
 
       - name: Save scan reports
         run: |
